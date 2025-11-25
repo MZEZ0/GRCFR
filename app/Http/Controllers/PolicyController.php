@@ -17,7 +17,7 @@ class PolicyController extends Controller
         $userId = Auth::id();
 
         $policies = Policy::with(['assessments' => function ($query) use ($userId) {
-            $query->where('user_id', $userId);
+            $query->where('user_id', $userId)->latest();
         }])->orderBy('code')->get();
 
         return view('policies.index', compact('policies'));
@@ -28,6 +28,7 @@ class PolicyController extends Controller
         $assessment = Assessment::with('evidenceFiles')
             ->where('user_id', Auth::id())
             ->where('policy_id', $policy->id)
+            ->latest()
             ->first();
 
         return view('policies.show', [
