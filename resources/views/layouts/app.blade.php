@@ -20,24 +20,27 @@
     {{-- ===== Vite CSS ===== --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-sans antialiased bg-background text-foreground min-h-screen flex flex-col">
+<body class="font-sans antialiased bg-gray-100 dark:bg-gray-900 min-h-screen">
+    <div class="min-h-screen">
+        @auth
+            @include('layouts.navigation')
+        @endauth
 
-    {{-- ===== Page Content ===== --}}
-    <main class="flex-1">
-        @yield('content')
-    </main>
+        @if (isset($header) || trim($__env->yieldContent('header')))
+            <header class="bg-white dark:bg-gray-800 shadow">
+                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                    {{ $header ?? '' }}
+                    @yield('header')
+                </div>
+            </header>
+        @endif
 
-    {{-- ===== Analytics Placeholder ===== --}}
-    {{-- If you want to integrate analytics (like Vercel or GA4), put their scripts here --}}
-    {{-- Example:
-    <script src="https://www.googletagmanager.com/gtag/js?id=G-XXXX"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-XXXX');
-    </script>
-    --}}
-
+        <main class="py-6">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                {{ $slot ?? '' }}
+                @yield('content')
+            </div>
+        </main>
+    </div>
 </body>
 </html>

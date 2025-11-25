@@ -17,7 +17,7 @@ return new class extends Migration
             // === Foreign Key to Compliance Framework ===
             // Every requirement belongs to one compliance framework (e.g., ISO 27001, GDPR, NIST)
             $table->foreignId('framework_id')
-                  ->constrained('compliance_frameworks')
+                  ->constrained('frameworks')
                   ->onDelete('cascade');
 
             // === Core Requirement Information ===

@@ -4,9 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Policies;
-use Spatie\QueryBuilder\QueryBuilder;
-use Spatie\QueryBuilder\AllowedFilter;
+use App\Models\Policy;
+use App\Models\Framework;
 
 class PoliciesController extends Controller
 {
@@ -15,20 +14,7 @@ class PoliciesController extends Controller
      */
     public function index(Request $request)
     {
-        $policies = QueryBuilder::for(Policies::query())
-            ->allowedFilters([
-                AllowedFilter::partial('title'),
-                AllowedFilter::exact('status'),
-                AllowedFilter::exact('category'),
-            ])
-            ->allowedSorts(['title', 'status', 'created_at'])
-            ->defaultSort('-created_at')
-            ->paginate(10)
-            ->appends($request->query());
-
-        if ($request->ajax()) {
-            return view('admin.policies.partials.table', compact('policies'))->render();
-        }
+        $policies = Policy::orderBy('code')->paginate(10);
 
         return view('admin.policies.index', compact('policies'));
     }
@@ -47,13 +33,14 @@ class PoliciesController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'code' => 'required|string|max:50|unique:policies,code',
             'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'category' => 'required|string|max:100',
-            'status' => 'required|in:draft,active,archived',
+            'short_description' => 'nullable|string',
         ]);
 
-        Policy::create($validated);
+        $frameworkId = Framework::first()->id ?? null;
+
+        Policy::create($validated + ['framework_id' => $frameworkId]);
 
         return redirect()
             ->route('admin.policies.index')
@@ -63,7 +50,7 @@ class PoliciesController extends Controller
     /**
      * Display the specified policy.
      */
-    public function show(Policies $policy)
+    public function show(Policy $policy)
     {
         return view('admin.policies.show', compact('policy'));
     }
@@ -71,7 +58,7 @@ class PoliciesController extends Controller
     /**
      * Show the form for editing the specified policy.
      */
-    public function edit(Policies $policy)
+    public function edit(Policy $policy)
     {
         return view('admin.policies.edit', compact('policy'));
     }
@@ -82,10 +69,9 @@ class PoliciesController extends Controller
     public function update(Request $request, Policy $policy)
     {
         $validated = $request->validate([
+            'code' => 'required|string|max:50|unique:policies,code,' . $policy->id,
             'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'category' => 'required|string|max:100',
-            'status' => 'required|in:draft,active,archived',
+            'short_description' => 'nullable|string',
         ]);
 
         $policy->update($validated);
@@ -98,7 +84,7 @@ class PoliciesController extends Controller
     /**
      * Remove the specified policy from storage.
      */
-    public function destroy(Policies $policy)
+    public function destroy(Policy $policy)
     {
         $policy->delete();
 

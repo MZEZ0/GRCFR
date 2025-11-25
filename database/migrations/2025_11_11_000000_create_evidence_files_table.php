@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('frameworks', function (Blueprint $table) {
+        Schema::create('evidence_files', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('code')->unique();
-            $table->text('description')->nullable();
-            $table->timestamps();
+            $table->foreignId('assessment_id')->constrained('assessments')->cascadeOnDelete();
+            $table->string('file_path');
+            $table->string('original_name');
+            $table->timestamp('uploaded_at');
         });
     }
 
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('frameworks');
+        Schema::dropIfExists('evidence_files');
     }
 };

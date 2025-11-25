@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\RiskControls;
-use App\Models\Risks;
+use App\Models\Risk;
 use App\Models\Controls;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
@@ -40,7 +40,7 @@ class RiskControlsController extends Controller
      */
     public function create()
     {
-        $risks = Risks::select('id', 'title')->orderBy('title')->get();
+        $risks = Risk::select('id', 'title')->orderBy('title')->get();
         $controls = Controls::select('id', 'title')->orderBy('title')->get();
         return view('admin.risk-controls.create', compact('risks', 'controls'));
     }
