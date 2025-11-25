@@ -5,14 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Assessments extends Model
+class Framework extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'title',
+        'name',
+        'code',
         'description',
-        'status',
-        'owner',
     ];
+
+    public function policies()
+    {
+        return $this->hasMany(Policy::class);
+    }
 }

@@ -12,15 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('policies', function (Blueprint $table) {
-           $table->id();
-    $table->string('title');
-    $table->text('description')->nullable();
-    $table->string('document_path')->nullable(); // uploaded file
-    $table->enum('status', ['draft', 'under_review', 'approved', 'published'])->default('draft');
-    $table->foreignId('owner_id')->nullable()->constrained('users')->onDelete('set null');
-    $table->date('review_date')->nullable();
-    $table->softDeletes();
-    $table->timestamps();
+            $table->id();
+            $table->foreignId('framework_id')->constrained('frameworks')->cascadeOnDelete();
+            $table->string('code')->unique();
+            $table->string('title');
+            $table->text('short_description')->nullable();
+            $table->timestamps();
         });
     }
 

@@ -4,9 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Risks;
-use Spatie\QueryBuilder\QueryBuilder;
-use Spatie\QueryBuilder\AllowedFilter;
+use App\Models\Risk;
 
 class RisksController extends Controller
 {
@@ -15,21 +13,7 @@ class RisksController extends Controller
      */
     public function index(Request $request)
     {
-        $risks = QueryBuilder::for(Risks::query())
-            ->allowedFilters([
-                AllowedFilter::partial('title'),
-                AllowedFilter::exact('category'),
-                AllowedFilter::exact('severity'),
-                AllowedFilter::exact('status'),
-            ])
-            ->allowedSorts(['title', 'severity', 'status', 'created_at'])
-            ->defaultSort('-created_at')
-            ->paginate(10)
-            ->appends($request->query());
-
-        if ($request->ajax()) {
-            return view('admin.risks.partials.table', compact('risks'))->render();
-        }
+        $risks = Risk::orderBy('code')->paginate(10);
 
         return view('admin.risks.index', compact('risks'));
     }
@@ -39,7 +23,7 @@ class RisksController extends Controller
      */
     public function create()
     {
-        return view('admin.risks.create');
+        abort(404);
     }
 
     /**
@@ -47,24 +31,13 @@ class RisksController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'category' => 'nullable|string|max:100',
-            'severity' => 'required|string|max:50',
-            'status' => 'required|string|max:50',
-        ]);
-
-        Risk::create($validated);
-
-        return redirect()->route('admin.risks.index')
-            ->with('success', 'Risk created successfully.');
+        abort(404);
     }
 
     /**
      * Display the specified risk.
      */
-    public function show(Risks $risks)
+    public function show(Risk $risk)
     {
         return view('admin.risks.show', compact('risk'));
     }
@@ -72,38 +45,24 @@ class RisksController extends Controller
     /**
      * Show the form for editing the specified risk.
      */
-    public function edit(Risk $risks)
+    public function edit(Risk $risk)
     {
-        return view('admin.risks.edit', compact('risk'));
+        abort(404);
     }
 
     /**
      * Update the specified risk in storage.
      */
-    public function update(Request $request, Risks $risks)
+    public function update(Request $request, Risk $risk)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'category' => 'nullable|string|max:100',
-            'severity' => 'required|string|max:50',
-            'status' => 'required|string|max:50',
-        ]);
-
-        $risk->update($validated);
-
-        return redirect()->route('admin.risks.index')
-            ->with('success', 'Risk updated successfully.');
+        abort(404);
     }
 
     /**
      * Remove the specified risk from storage.
      */
-    public function destroy(Risks $risks)
+    public function destroy(Risk $risk)
     {
-        $risk->delete();
-
-        return redirect()->route('admin.risks.index')
-            ->with('success', 'Risk deleted successfully.');
+        abort(404);
     }
 }
