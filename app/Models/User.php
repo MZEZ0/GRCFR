@@ -51,9 +51,10 @@ use  HasFactory, Notifiable, HasRoles;
         ];
     }
 
-    public function role() { return $this->belongsTo(Roles::class); }
+public function role() { return $this->belongsTo(Roles::class); }
 public function policies() { return $this->hasMany(Policy::class, 'owner_id'); }
 public function risks() { return $this->hasMany(Risk::class, 'owner_id'); }
 public function assessments() { return $this->hasMany(Assessment::class); }
+public function answers() { return $this->hasMany(Answer::class); }
 
 }

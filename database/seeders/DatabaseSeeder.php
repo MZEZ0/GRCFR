@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             SmeBaselineSeeder::class,
             CompanySeeder::class,
+            QuestionnaireSeeder::class,
             DemoDataSeeder::class,
         ]);
     }
