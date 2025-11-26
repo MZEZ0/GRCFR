@@ -4,7 +4,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 
 // === Admin Controllers ===
-use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PolicyController;
+use App\Http\Controllers\RiskController;
+use App\Http\Controllers\QuestionnaireController;
+use App\Http\Controllers\AssessmentReportController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\PoliciesController;
 use App\Http\Controllers\Admin\RisksController;
@@ -37,6 +42,19 @@ Route::view('/company', 'pages.company')->name('company');
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/policies', [PolicyController::class, 'index'])->name('policies.index');
+    Route::get('/policies/{policy}', [PolicyController::class, 'show'])->name('policies.show');
+    Route::post('/policies/{policy}/assess', [PolicyController::class, 'assess'])->name('policies.assess');
+    Route::get('/risks', [RiskController::class, 'index'])->name('risks.index');
+
+    Route::get('/questionnaire', [QuestionnaireController::class, 'index'])->name('questionnaire.index');
+    Route::get('/questionnaire/{policy}', [QuestionnaireController::class, 'show'])->name('questionnaire.show');
+    Route::post('/questionnaire/{policy}', [QuestionnaireController::class, 'store'])->name('questionnaire.store');
+
+    Route::get('/report', [AssessmentReportController::class, 'index'])->name('report.index');
+    Route::get('/report/pdf', [AssessmentReportController::class, 'downloadPdf'])->name('report.pdf');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -55,7 +73,7 @@ Route::middleware(['auth', 'verified', 'role:Admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
         // === Core GRC Modules ===
         Route::resource('users', UserController::class);
