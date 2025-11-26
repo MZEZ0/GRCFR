@@ -42,15 +42,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Status</label>
                     <select name="status" class="w-full rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white" required>
-                        @php
-                            $options = [
-                                'compliant' => 'Compliant',
-                                'partial' => 'Partially compliant',
-                                'non_compliant' => 'Non-compliant',
-                                'not_applicable' => 'Not applicable',
-                            ];
-                        @endphp
-                        @foreach ($options as $value => $label)
+                        @foreach ($statusOptions as $value => $label)
                             <option value="{{ $value }}" @selected(optional($assessment)->status === $value)>{{ $label }}</option>
                         @endforeach
                     </select>

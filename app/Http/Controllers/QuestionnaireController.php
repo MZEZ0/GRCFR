@@ -49,13 +49,14 @@ class QuestionnaireController extends Controller
             'assessment' => $assessment,
             'company' => $company,
             'nextPolicy' => $nextPolicy,
+            'statusOptions' => Assessment::STATUS_LABELS,
         ]);
     }
 
     public function store(Request $request, Policy $policy): RedirectResponse
     {
         $validated = $request->validate([
-            'status' => 'required|in:compliant,partial,non_compliant,not_applicable',
+            'status' => 'required|in:' . implode(',', Assessment::STATUSES),
             'notes' => 'nullable|string',
             'evidence.*' => 'file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx',
         ]);

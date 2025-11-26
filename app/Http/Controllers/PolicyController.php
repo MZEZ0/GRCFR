@@ -43,13 +43,14 @@ class PolicyController extends Controller
             'policy' => $policy,
             'assessment' => $assessment,
             'company' => $company,
+            'statusOptions' => Assessment::STATUS_LABELS,
         ]);
     }
 
     public function assess(Request $request, Policy $policy): RedirectResponse
     {
         $validated = $request->validate([
-            'status' => 'required|in:compliant,partial,non_compliant,not_applicable',
+            'status' => 'required|in:' . implode(',', Assessment::STATUSES),
             'notes' => 'nullable|string',
             'evidence.*' => 'file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx',
         ]);
@@ -57,9 +58,9 @@ class PolicyController extends Controller
         $userId = Auth::id();
         $company = Company::firstOrFail();
 
-        
+
         $assessment = Assessment::updateOrCreate(
-            ['user_id' => $userId, 'policy_id' => $policy->id, 'company_id' => optional($company)->id],
+            ['user_id' => $userId, 'policy_id' => $policy->id, 'company_id' => $company->id],
             ['status' => $validated['status'], 'notes' => $validated['notes'] ?? null]
         );
 

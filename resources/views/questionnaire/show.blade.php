@@ -27,15 +27,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Compliance status</label>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        @php
-                            $options = [
-                                'compliant' => 'Compliant',
-                                'partial' => 'Partially compliant',
-                                'non_compliant' => 'Non-compliant',
-                                'not_applicable' => 'Not applicable',
-                            ];
-                        @endphp
-                        @foreach ($options as $value => $label)
+                        @foreach ($statusOptions as $value => $label)
                             <label class="flex items-center gap-2 p-3 border rounded cursor-pointer dark:border-gray-700">
                                 <input type="radio" name="status" value="{{ $value }}" @checked(optional($assessment)->status === $value) required>
                                 <span class="text-sm text-gray-900 dark:text-gray-100">{{ $label }}</span>
