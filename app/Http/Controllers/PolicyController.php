@@ -1,0 +1,83 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Assessment;
+use App\Models\Company;
+use App\Models\EvidenceFile;
+use App\Models\Policy;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
+
+class PolicyController extends Controller
+{
+    public function index(): View
+    {
+        $userId = Auth::id();
+        $company = Company::firstOrFail();
+        $companyId = $company->id;
+
+        $policies = Policy::with(['assessments' => function ($query) use ($userId, $companyId) {
+            $query->where('user_id', $userId)
+                ->when($companyId, fn ($q) => $q->where('company_id', $companyId))
+                ->latest();
+        }])->orderBy('code')->get();
+
+        return view('policies.index', compact('policies', 'company'));
+    }
+
+    public function show(Policy $policy): View
+    {
+        $company = Company::firstOrFail();
+
+        $assessment = Assessment::with('evidenceFiles')
+            ->where('user_id', Auth::id())
+            ->where('policy_id', $policy->id)
+            ->where('company_id', $company->id)
+            ->latest()
+            ->first();
+
+        return view('policies.show', [
+            'policy' => $policy,
+            'assessment' => $assessment,
+            'company' => $company,
+            'statusOptions' => Assessment::STATUS_LABELS,
+        ]);
+    }
+
+    public function assess(Request $request, Policy $policy): RedirectResponse
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:' . implode(',', Assessment::STATUSES),
+            'notes' => 'nullable|string',
+            'evidence.*' => 'file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx',
+        ]);
+
+        $userId = Auth::id();
+        $company = Company::firstOrFail();
+
+
+        $assessment = Assessment::updateOrCreate(
+            ['user_id' => $userId, 'policy_id' => $policy->id, 'company_id' => $company->id],
+            ['status' => $validated['status'], 'notes' => $validated['notes'] ?? null]
+        );
+
+        if ($request->hasFile('evidence')) {
+            foreach ($request->file('evidence') as $file) {
+                $path = $file->store('evidence', 'public');
+                EvidenceFile::create([
+                    'assessment_id' => $assessment->id,
+                    'file_path' => $path,
+                    'original_name' => $file->getClientOriginalName(),
+                    'uploaded_at' => now(),
+                ]);
+            }
+        }
+
+        return redirect()
+            ->route('policies.show', $policy)
+            ->with('success', 'Assessment saved successfully.');
+    }
+}

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Controls;
-use App\Models\Risks; // ✅ correct import
+use App\Models\Risk; // Updated import
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
 
@@ -40,7 +40,7 @@ class ControlsController extends Controller
     public function create()
     {
         // ✅ Load all risks for the dropdown
-        $risks = Risks::select('id', 'title')->orderBy('title')->get();
+        $risks = Risk::select('id', 'title')->orderBy('title')->get();
         return view('admin.controls.create', compact('risks'));
     }
 

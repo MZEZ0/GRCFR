@@ -12,17 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('risks', function (Blueprint $table) {
-              $table->id();
-    $table->string('risk_code')->unique(); // e.g. RSK-001
-    $table->string('title');
-    $table->text('description')->nullable();
-    $table->enum('category', ['Operational', 'Financial', 'IT', 'Strategic', 'Compliance'])->default('Operational');
-    $table->unsignedTinyInteger('likelihood')->default(1);
-    $table->unsignedTinyInteger('impact')->default(1);
-    $table->foreignId('owner_id')->nullable()->constrained('users')->onDelete('set null');
-    $table->enum('status', ['Open', 'Mitigating', 'Closed'])->default('Open');
-    $table->softDeletes();
-    $table->timestamps();
+            $table->id();
+            $table->string('code')->unique();
+            $table->string('title');
+            $table->text('statement');
+            $table->unsignedTinyInteger('likelihood');
+            $table->unsignedTinyInteger('impact');
+            $table->unsignedSmallInteger('score');
+            $table->string('residual_level');
+            $table->text('mitigation_plan')->nullable();
+            $table->timestamps();
         });
     }
 

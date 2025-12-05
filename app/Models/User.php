@@ -7,9 +7,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
-use App\Models\Role;    
+use App\Models\Role;
 use App\Models\Policy;
 use App\Models\Risk;
+use App\Models\Assessment;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable
@@ -50,8 +51,10 @@ use  HasFactory, Notifiable, HasRoles;
         ];
     }
 
-    public function role() { return $this->belongsTo(Roles::class); }
-public function policies() { return $this->hasMany(Policies::class, 'owner_id'); }
-public function risks() { return $this->hasMany(Risks::class, 'owner_id'); }
+public function role() { return $this->belongsTo(Roles::class); }
+public function policies() { return $this->hasMany(Policy::class, 'owner_id'); }
+public function risks() { return $this->hasMany(Risk::class, 'owner_id'); }
+public function assessments() { return $this->hasMany(Assessment::class); }
+public function answers() { return $this->hasMany(Answer::class); }
 
 }

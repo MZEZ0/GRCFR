@@ -4,11 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
-use Spatie\QueryBuilder\QueryBuilder;
-use Spatie\QueryBuilder\AllowedFilter;
-use Illuminate\Support\Facades\View;
-use App\Models\Assessments;
+use App\Models\Assessment;
 class AssessmentController extends Controller
 {
     /**
@@ -16,21 +12,7 @@ class AssessmentController extends Controller
      */
     public function index(Request $request)
     {
-        $assessments = QueryBuilder::for(Assessments::query())
-            ->allowedFilters([
-                AllowedFilter::partial('title'),
-                AllowedFilter::exact('status'),
-                AllowedFilter::partial('owner'),
-            ])
-            ->allowedSorts(['title', 'status', 'created_at'])
-            ->defaultSort('-created_at')
-            ->paginate(10)
-            ->appends($request->query());
-
-        // AJAX request for dynamic updates (table only)
-        if ($request->ajax()) {
-            return view('admin.assessments.partials.table', compact('assessments'))->render();
-        }
+        $assessments = Assessment::with(['policy', 'user'])->latest()->paginate(10);
 
         return view('admin.assessments.index', compact('assessments'));
     }
@@ -40,7 +22,7 @@ class AssessmentController extends Controller
      */
     public function create()
     {
-        return view('admin.assessments.create');
+        abort(404);
     }
 
     /**
@@ -48,24 +30,13 @@ class AssessmentController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'title'       => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'status'      => ['required', Rule::in(['draft', 'active', 'closed'])],
-            'owner'       => ['nullable', 'string', 'max:255'],
-        ]);
-
-        Assessments::create($validated);
-
-        return redirect()
-            ->route('admin.assessments.index')
-            ->with('success', 'Assessment created successfully.');
+        abort(404);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Assessments $assessment)
+    public function show(Assessment $assessment)
     {
         return view('admin.assessments.show', compact('assessment'));
     }
@@ -73,39 +44,24 @@ class AssessmentController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Assessments $assessment)
+    public function edit(Assessment $assessment)
     {
-        return view('admin.assessments.edit', compact('assessment'));
+        abort(404);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Assessments $assessment)
+    public function update(Request $request, Assessment $assessment)
     {
-        $validated = $request->validate([
-            'title'       => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'status'      => ['required', Rule::in(['draft', 'active', 'closed'])],
-            'owner'       => ['nullable', 'string', 'max:255'],
-        ]);
-
-        $assessment->update($validated);
-
-        return redirect()
-            ->route('admin.assessments.index')
-            ->with('success', 'Assessment updated successfully.');
+        abort(404);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Assessments $assessment)
+    public function destroy(Assessment $assessment)
     {
-        $assessment->delete();
-
-        return redirect()
-            ->route('admin.assessments.index')
-            ->with('success', 'Assessment deleted successfully.');
+        abort(404);
     }
 }
